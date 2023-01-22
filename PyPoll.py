@@ -1,21 +1,21 @@
-# Add our dependencies.
+# Add dependencies.
 import csv
 import os
-# Assign a variable to load a file from a path.
+# Assign variables to load and save files.
 file_to_load = os.path.join("Resources", "election_results.csv")
-# Assign a variable to save the file to a path.
 file_to_save = os.path.join("Analysis", "election_analysis.txt")
 
-# Initialize a total vote counter. Set up candidate options, candidate votes.
+# Initialize a total vote counter. Set up candidate options, votes, results.
 total_votes = 0
 candidate_options = []
 candidate_votes = {}
-# Winning Candidate and Winning Count Tracker
+candidate_results = ""
+# Winning candidate variables.
 winning_candidate = ""
 winning_count = 0
 winning_percentage = 0
 
-# Open the election results and read the file
+# Open election results and read the file.
 with open(file_to_load) as election_data:
     file_reader = csv.reader(election_data)
     # Skip header row.
@@ -36,8 +36,8 @@ with open(file_to_load) as election_data:
         votes = candidate_votes[candidate_name]
         vote_percentage = float(votes) / float(total_votes) * 100
 
-        # Print candidate's name, vote count, and percentage of votes.
-        print(f"{candidate_name}: {vote_percentage:.1f}% ({votes:,})\n")
+        # Save candidate results.
+        candidate_results += f"{candidate_name}: {vote_percentage:.1f}% ({votes:,})\n"
 
         # Update winning count, percentage, and candidate.
         if (votes > winning_count) and (vote_percentage > winning_percentage):
@@ -45,10 +45,24 @@ with open(file_to_load) as election_data:
             winning_percentage = vote_percentage
             winning_candidate = candidate_name
 
+    # Winning candidate summary.
     winning_candidate_summary = (
     f"-------------------------\n"
     f"Winner: {winning_candidate}\n"
     f"Winning Vote Count: {winning_count:,}\n"
     f"Winning Percentage: {winning_percentage:.1f}%\n"
     f"-------------------------\n")
-    print(winning_candidate_summary)
+
+# Save election results to text file.
+with open(file_to_save, "w") as txt_file:
+    election_results = (
+        f"\nElection Results\n"
+        f"-------------------------\n"
+        f"Total Votes: {total_votes:,}\n"
+        f"-------------------------\n"
+        f"{candidate_results}"
+        f"{winning_candidate_summary}")
+    txt_file.write(election_results)
+
+# Print election results in terminal.
+print(election_results)
